@@ -27,7 +27,7 @@ from xml.sax.saxutils import escape
 
 __version__ = '0.1'
 
-DEFAULT_FONT = 'Cooper-Black' if os.name == 'nt' else 'Bookman-DemiItalic'
+DEFAULT_FONT = 'Cooper-Black' if os.name == 'nt' else 'DejaVu-Sans-Book'
 _P = cycle('\\|/-')
 _win = 'r' if os.name == 'nt' else ''
 _exe = '.exe' if os.name == 'nt' else ''
