@@ -231,6 +231,7 @@ class Base:
     def cleanup(self):
         shutil.rmtree(self.tmp)
 
+
 class VideoBuilder(Base):
 
     def __init__(self, pictures, profile=PROFILES['1080p'],
@@ -268,8 +269,9 @@ class VideoBuilder(Base):
             ('Created last picture with fade-out', self.create_last_picture),
             ('Resized pictures according to profile', self.resize_pictures),
             ('Created animation pictures', self.create_anim_pictures),
-            #('Created movies for pictures', self.create_small_movies),
-            #('Created movies for transitions', self.create_transition_movies),
+            # ('Created movies for pictures', self.create_small_movies),
+            # ('Created movies for transitions',
+            # self.create_transition_movies),
             ('Created small movies', self.create_movies),
             ('Created video only MKV file', self.create_video_only_mkv),
         )
@@ -296,11 +298,15 @@ class VideoBuilder(Base):
             out = _out
         cmd = [self.exe['montage'], '-tile', '2x']
         cmd.extend(pics)
-        cmd.extend(
-            ['-geometry', '{}x{}+10+50'.format(self.profile.montage_width,
-             self.profile.montage_height), '-background', self.background,
-             out]
-        )
+        cmd.extend([
+            '-geometry',
+            '{}x{}+10+50'.format(
+                self.profile.montage_width, self.profile.montage_height
+            ),
+            '-background',
+            self.background,
+            out
+        ])
         subprocess.check_call(cmd)
         if self.title:
             cmd = [self.exe['convert'], out, '-gravity', 'center', '-font',
@@ -331,7 +337,7 @@ class VideoBuilder(Base):
         self.last = out
 
     def resize_pictures(self):
-        start = time.time()
+        # start = time.time()
         size = '{}x{}'.format(*self.profile.size)
         pics = [self.first] + self.pictures + [self.last]
         for pic in pics:
@@ -355,7 +361,7 @@ class VideoBuilder(Base):
 
     def create_small_movies(self):
         self._create_first_movie()
-        length = len(self.pictures)
+        # length = len(self.pictures)
         for pic in self.pictures:
             _name = os.path.basename(pic)
             name, _ = os.path.splitext(_name)
@@ -367,7 +373,7 @@ class VideoBuilder(Base):
             if self.remove_tempfiles:
                 os.remove(pic)
         self._create_last_movie()
-    
+
     def create_transition_movies(self):
         anims = os.listdir(self.dirs['anim_pics'])
         anims.sort()
@@ -387,7 +393,7 @@ class VideoBuilder(Base):
         p.start()
         self.create_transition_movies()
         p.join()
-        
+
     def create_video_only_mkv(self):
         opts = os.path.join(self.tmp, 'video_only.txt')
         out = os.path.join(self.tmp, 'video_only.mkv')
@@ -707,6 +713,7 @@ def _get_audio(files_and_folders):
                     files.append(full)
     return files
 
+
 def paste_buildfile(args):
     with open(args.output, 'w', encoding='utf-8') as fp:
         fp.write(BUILDFILE_CONTENT)
@@ -718,19 +725,25 @@ def print_fonts(args):
         stderr=subprocess.DEVNULL
     )
     fonts = []
+    default_font_found = False
     for line in p.stdout:
         line = line.decode('utf-8').strip()
         if 'Font:' in line:
-            fonts.append(line.split()[1])
+            font = line.split()[1].strip()
+            fonts.append(font)
+            if font == DEFAULT_FONT:
+                default_font_found = True
     p.wait()
     print('')
     count = len(fonts) + 1
     for f in fonts:
         print(' *', f)
-    print(' ** Included font:', DEFAULT_FONT)
+    found = '(not found on your system)' if not default_font_found else ''
+    print(' ** Default font:', DEFAULT_FONT, found)
     print('')
     print('Found {} fonts.'.format(count))
     print('')
+
 
 def find_progs(args):
     print('')
@@ -759,31 +772,31 @@ def _get_file(filename):
 
 
 def _get_audio_from_file(filename):
-    l = []
+    tracks = []
     with open(filename, encoding='utf-8') as fp:
         for f in fp:
             f = f.strip()
             if not f:
                 continue
             if f.startswith('+'):
-                l.append(recurse_audio(f[1:].strip()))
+                tracks.append(recurse_audio(f[1:].strip()))
             else:
-                l.append(f)
-    return l
+                tracks.append(f)
+    return tracks
 
 
 def _get_images_from_file(filename):
-    l = []
+    images = []
     with open(filename, encoding='utf-8') as fp:
         for f in fp:
             f = f.strip()
             if not f:
                 continue
             if f.startswith('+'):
-                l.append(recurse(f[1:].strip()))
+                images.append(recurse(f[1:].strip()))
             else:
-                l.append(f)
-    return l
+                images.append(f)
+    return images
 
 
 def _slideshow(args):
@@ -819,7 +832,7 @@ def _slideshow(args):
     del args['version']
     del args['func']
     print(args)
-    #return slideshow(images, audio_files, **args)
+    # return slideshow(images, audio_files, **args)
 
 
 def main():
