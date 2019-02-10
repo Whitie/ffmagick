@@ -28,8 +28,7 @@ from xml.sax.saxutils import escape
 __version__ = '0.1'
 
 DEFAULT_FONT = 'Cooper-Black' if os.name == 'nt' else 'DejaVu-Sans-Book'
-_P = cycle('\\|/-')
-_win = 'r' if os.name == 'nt' else ''
+_P = cycle(r'\|/-')
 _exe = '.exe' if os.name == 'nt' else ''
 EXT = ('tiff', 'jpeg', 'bmp', 'png')
 AUDIO_EXT = ('.wav', '.ogg', '.mp3', '.m4a', '.aac')
@@ -78,7 +77,8 @@ from ffmagick import slideshow, recurse, recurse_audio
 #               recurse('/home/user/fotos'),
 #               '/home/user/myfolder',
 #          ]
-# On Windows use raw strings like r'C:\\Users\\user\\pictures'
+# On Windows use raw strings (r'C:\\Users\\user\\pictures') or forward
+# slashes ('C:/Users/user/pictures').
 IMAGES = []
 
 # Put your audio files and/or directories here. If you have subfolders,
@@ -88,7 +88,8 @@ IMAGES = []
 #               recurse_audio('/home/user/music'),
 #               '/home/user/audiofolder'
 #          ]
-# On Windows use raw strings like r'C:\\Users\\user\\music'
+# On Windows use raw strings (r'C:\\Users\\user\\music') or forward
+# slashes ('C:/Users/user/music').
 AUDIO = []
 
 # Output profile for your show.
@@ -108,7 +109,8 @@ TRANSITION_DURATION = 1
 # Set your font here. Run `python ffmagick.py list_fonts` for a list of
 # supported fonts of your platform. The best way is to give an absolute
 # path to a .ttf file here. System fonts can be used without path.
-# On Windows use raw strings like r'C:\\windows\\fonts\\coopbl.ttf'
+# On Windows use raw strings (r'C:\\windows\\fonts\\coopbl.ttf') or
+# forward slashes ('C:/windows/fonts/coopbl.ttf').
 FONT = '{font}'
 
 # Title for your slideshow
@@ -132,13 +134,12 @@ TEXTCOLOR = 'white'
 WORKDIR = None
 
 # Mapping for the needed external programs if not in your PATH.
-# On Windows use raw strings like r'C:\\Progam Files\\ImageMagick\\convert.exe'
 EXECUTABLES = {{
-    'convert': {win}'convert{exe}',
-    'montage': {win}'montage{exe}',
-    'mogrify': {win}'mogrify{exe}',
-    'ffmpeg': {win}'ffmpeg{exe}',
-    'mkvmerge': {win}'mkvmerge{exe}',
+    'convert': r'convert{exe}',
+    'montage': r'montage{exe}',
+    'mogrify': r'mogrify{exe}',
+    'ffmpeg': r'ffmpeg{exe}',
+    'mkvmerge': r'mkvmerge{exe}',
 }}
 
 # Remove all temporary files after slideshow is finished.
@@ -147,7 +148,7 @@ EXECUTABLES = {{
 REMOVE_TEMPFILES = True
 
 # Filename for your created slideshow.
-OUTPUT = {win}'{out}'
+OUTPUT = r'{out}'
 
 
 if __name__ == '__main__':
@@ -168,7 +169,7 @@ if __name__ == '__main__':
         workdir=WORKDIR,
         executables=EXECUTABLES,
     )
-""".format(font=DEFAULT_FONT, win=_win, exe=_exe,
+""".format(font=DEFAULT_FONT, exe=_exe,
            out=os.path.join(os.getcwd(), 'slideshow.mkv'))
 
 
